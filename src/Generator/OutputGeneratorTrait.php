@@ -55,6 +55,9 @@ trait OutputGeneratorTrait
                     echo "Error: Unable to resolve reference: " . $itemType->getReference() . "\n";
                     exit(1);
                 }
+            } else {
+                echo "Error: Please use a reference for " . $resolvedSchema->getName() . "\n";
+                exit(1);
             }
         } else {
             $class = $context->getObjectClassMap()[spl_object_hash($resolvedSchema)];
