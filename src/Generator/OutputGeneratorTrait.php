@@ -43,11 +43,25 @@ trait OutputGeneratorTrait
             return [null, null];
         }
 
-        $class = $context->getObjectClassMap()[spl_object_hash($resolvedSchema)];
-        $class = $context->getNamespace() . "\\Model\\" . $class->getName();
-
-        if ($array) {
-            $class .= "[]";
+        // if the reference is an array, we need to resolve it
+        if ($resolvedSchema->getType() === 'array') {
+            // figure out the type of items
+            $itemType = $resolvedSchema->getItems();
+            if ($itemType->getReference()) {
+                list($hash, $def, $name) = explode('/', $itemType->getReference());
+                if (!empty($name)) {
+                    $class = $context->getNamespace() . "\\Model\\" . $name . "[]";
+                } else {
+                    echo "Error: Unable to resolve reference: " . $itemType->getReference() . "\n";
+                    exit(1);
+                }
+            }
+        } else {
+            $class = $context->getObjectClassMap()[spl_object_hash($resolvedSchema)];
+            $class = $context->getNamespace() . "\\Model\\" . $class->getName();
+            if ($array) {
+                $class .= "[]";
+            }
         }
 
         return ["\\" . $class, new Stmt\If_(
