@@ -47,7 +47,7 @@ trait OutputGeneratorTrait
         if ($resolvedSchema->getType() === 'array') {
             // figure out the type of items
             $itemType = $resolvedSchema->getItems();
-            if ($itemType->getReference()) {
+            if ($itemType && method_exists($itemType, 'getReference') && $itemType->getReference()) {
                 list($hash, $def, $name) = explode('/', $itemType->getReference());
                 if (!empty($name)) {
                     $class = $context->getNamespace() . "\\Model\\" . $name . "[]";
